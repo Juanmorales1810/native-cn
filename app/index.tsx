@@ -22,7 +22,8 @@ import {
 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { FlatList, Pressable, ScrollView, View } from 'react-native';
+import { FlatList, ImageBackground, Pressable, ScrollView, View } from 'react-native';
+import KeyboardAware from '@/components/keyboard-aware';
 import { Controller, useForm } from 'react-hook-form';
 import { userSchema, type UserFormData, defaultUserValues } from '@/validations';
 
@@ -266,22 +267,22 @@ export default function Screen() {
                 index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
             }`}>
             <View className="flex-1">
-                <Text variant="default" className="mb-1 font-semibold text-foreground">
+                <Text variant="default" className="mb-1 pb-0.5 font-semibold text-foreground">
                     {item.name}
                 </Text>
-                <Text variant="small" className="mb-1 text-muted-foreground">
+                <Text variant="small" className="mb-1 pb-0.5 text-muted-foreground">
                     {item.profession}
                 </Text>
-                <Text variant="small" className="text-muted-foreground">
+                <Text variant="small" className="pb-0.5 text-muted-foreground">
                     {item.company}
                 </Text>
             </View>
 
             <View className="flex-1 justify-center">
-                <Text variant="muted" className="mb-1 text-center">
+                <Text variant="muted" className="mb-1 pb-0.5 text-center">
                     {item.age} años
                 </Text>
-                <Text variant="small" className="text-center text-muted-foreground">
+                <Text variant="small" className="pb-0.5 text-center text-muted-foreground">
                     {item.city}
                 </Text>
             </View>
@@ -290,323 +291,349 @@ export default function Screen() {
                 <Badge variant={getStatusBadgeVariant(item.status)} className="mb-2">
                     <Text className="text-xs">{item.status}</Text>
                 </Badge>
-                <Text variant="small" className="text-muted-foreground">
+                <Text variant="small" className="pb-0.5 text-muted-foreground">
                     {item.country}
                 </Text>
             </View>
         </Pressable>
     );
 
+    const image = require('../assets/images/14571567_5479107.jpg');
+
     return (
         <>
             <Stack.Screen options={SCREEN_OPTIONS[colorScheme ?? 'light']} />
-            <View className="flex-1 bg-background">
-                {/* Alert de éxito */}
-                {showSuccessAlert && (
-                    <View className="absolute left-4 right-4 top-32 z-50">
-                        <Alert icon={CheckCircleIcon} className="border-green-200 bg-green-50">
-                            <AlertTitle className="text-green-800">
-                                ¡Usuario agregado exitosamente!
-                            </AlertTitle>
-                            <AlertDescription className="text-green-600">
-                                El nuevo usuario ha sido añadido a la lista.
-                            </AlertDescription>
-                        </Alert>
-                    </View>
-                )}
-
-                {/* Header de la aplicación */}
-                <View className="bg-primary/5 px-4 pb-6 pt-28">
-                    <View className="mb-4 items-center">
-                        <Icon as={UsersIcon} className="mb-2 size-10 text-primary" />
-                        <Text variant="h2" className="mb-1 text-center">
-                            Gestión de Usuarios
-                        </Text>
-                        <Text variant="muted" className="text-center">
-                            {filteredUsers.length} usuarios encontrados
-                        </Text>
-                    </View>
-
-                    {/* Barra de búsqueda y filtros */}
-                    <View className="flex-row gap-3">
-                        <View className="flex-1">
-                            <Input
-                                placeholder="Buscar usuarios..."
-                                value={searchQuery}
-                                onChangeText={setSearchQuery}
-                                className="bg-background"
-                            />
+            <KeyboardAware>
+                <View className="flex-1 bg-background">
+                    {/* Alert de éxito */}
+                    {showSuccessAlert && (
+                        <View className="absolute left-4 right-4 top-32 z-50">
+                            <Alert icon={CheckCircleIcon} className="border-green-200 bg-green-50">
+                                <AlertTitle className="text-green-800">
+                                    ¡Usuario agregado exitosamente!
+                                </AlertTitle>
+                                <AlertDescription className="text-green-600">
+                                    El nuevo usuario ha sido añadido a la lista.
+                                </AlertDescription>
+                            </Alert>
                         </View>
+                    )}
+
+                    {/* Header de la aplicación */}
+                    <ImageBackground source={image} resizeMode="cover">
+                        <View className="relativepx-4 pb-6 pt-28">
+                            <View className="mb-4 items-center">
+                                <Icon as={UsersIcon} className="mb-2 size-10 text-white" />
+                                <Text variant="h2" className="mb-1 text-center text-white">
+                                    Gestión de Usuarios
+                                </Text>
+                                <Text variant="muted" className="text-center text-white">
+                                    {filteredUsers.length} usuarios encontrados
+                                </Text>
+                            </View>
+
+                            {/* Barra de búsqueda y filtros */}
+                            <View className="flex-row gap-3 px-2">
+                                <View className="flex-1">
+                                    <Input
+                                        placeholder="Buscar usuarios..."
+                                        value={searchQuery}
+                                        onChangeText={setSearchQuery}
+                                        className="bg-background"
+                                    />
+                                </View>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onPress={() =>
+                                        setFilterStatus(
+                                            filterStatus === 'all'
+                                                ? 'Activo'
+                                                : filterStatus === 'Activo'
+                                                  ? 'Inactivo'
+                                                  : 'all'
+                                        )
+                                    }>
+                                    <Icon as={FilterIcon} className="size-4" />
+                                </Button>
+                            </View>
+                            {filterStatus !== 'all' && (
+                                <View className="mt-2 flex-row items-center px-4">
+                                    <Text variant="small" className="text-muted-foreground">
+                                        Filtro aplicado:
+                                    </Text>
+                                    <Badge variant="secondary" className="ml-2 rounded-full">
+                                        <Text className="text-xs">
+                                            {filterStatus === 'Activo' ? 'Activos' : 'Inactivos'}
+                                        </Text>
+                                    </Badge>
+                                </View>
+                            )}
+                        </View>
+                    </ImageBackground>
+
+                    {/* Tabla de usuarios */}
+                    <View className="mx-2 my-4 flex-1 overflow-hidden rounded-xl border border-border bg-card">
+                        {/* Header de la tabla */}
+                        <View className="flex-row border-b border-border bg-muted/50 p-4">
+                            <View className="flex-1">
+                                <Text variant="small" className="font-semibold text-foreground">
+                                    Usuario
+                                </Text>
+                            </View>
+                            <View className="flex-1">
+                                <Text
+                                    variant="small"
+                                    className="text-center font-semibold text-foreground">
+                                    Información
+                                </Text>
+                            </View>
+                            <View className="flex-1">
+                                <Text
+                                    variant="small"
+                                    className="text-right font-semibold text-foreground">
+                                    Estado
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Lista de usuarios */}
+                        <FlatList
+                            data={filteredUsers}
+                            keyExtractor={(item) => item.id}
+                            renderItem={renderUserItem}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    </View>
+
+                    {/* Botones de acción */}
+                    <View className="flex-row gap-3 px-4 pb-6">
                         <Button
-                            variant="outline"
-                            size="icon"
-                            onPress={() =>
-                                setFilterStatus(
-                                    filterStatus === 'all'
-                                        ? 'Activo'
-                                        : filterStatus === 'Activo'
-                                          ? 'Inactivo'
-                                          : 'all'
-                                )
-                            }>
-                            <Icon as={FilterIcon} className="size-4" />
+                            variant="default"
+                            className="flex-1"
+                            onPress={() => setIsAddModalOpen(true)}>
+                            <Icon as={PlusIcon} className="mr-2 size-4 text-white" />
+                            <Text>Agregar Usuario</Text>
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                            <Icon as={DownloadIcon} className="mr-2 size-4" />
+                            <Text>Exportar</Text>
                         </Button>
                     </View>
-                </View>
 
-                {/* Tabla de usuarios */}
-                <View className="mx-2 my-4 flex-1 overflow-hidden rounded-xl border border-border bg-card">
-                    {/* Header de la tabla */}
-                    <View className="flex-row border-b border-border bg-muted/50 p-4">
-                        <View className="flex-1">
-                            <Text variant="small" className="font-semibold text-foreground">
-                                Usuario
+                    {/* Modal para agregar usuario */}
+                    <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                        <DialogContent className="h-[70%] w-96">
+                            <Text variant="h3" className="mb-4 text-center">
+                                Agregar Nuevo Usuario
                             </Text>
-                        </View>
-                        <View className="flex-1">
-                            <Text
-                                variant="small"
-                                className="text-center font-semibold text-foreground">
-                                Información
-                            </Text>
-                        </View>
-                        <View className="flex-1">
-                            <Text
-                                variant="small"
-                                className="text-right font-semibold text-foreground">
-                                Estado
-                            </Text>
-                        </View>
-                    </View>
 
-                    {/* Lista de usuarios */}
-                    <FlatList
-                        data={filteredUsers}
-                        keyExtractor={(item) => item.id}
-                        renderItem={renderUserItem}
-                        showsVerticalScrollIndicator={false}
-                    />
-                </View>
-
-                {/* Botones de acción */}
-                <View className="flex-row gap-3 px-4 pb-6">
-                    <Button
-                        variant="default"
-                        className="flex-1"
-                        onPress={() => setIsAddModalOpen(true)}>
-                        <Icon as={PlusIcon} className="mr-2 size-4 text-white dark:text-black" />
-                        <Text>Agregar Usuario</Text>
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                        <Icon as={DownloadIcon} className="mr-2 size-4" />
-                        <Text>Exportar</Text>
-                    </Button>
-                </View>
-
-                {/* Modal para agregar usuario */}
-                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                    <DialogContent className="h-[85%] w-96">
-                        <Text variant="h3" className="mb-4 text-center">
-                            Agregar Nuevo Usuario
-                        </Text>
-
-                        <ScrollView
-                            showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{ paddingBottom: 20 }}
-                            keyboardShouldPersistTaps="handled"
-                            className="flex-1">
-                            <View className="gap-4">
-                                {/* Nombre */}
-                                <View>
-                                    <Label>Nombre Completo *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="name"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Input
-                                                placeholder="Ej: Juan Pérez"
-                                                value={value}
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                            />
-                                        )}
-                                    />
-                                    <FieldError error={errors.name?.message} />
-                                </View>
-
-                                {/* Edad y País */}
-                                <View className="flex-row gap-3">
-                                    <View className="flex-1">
-                                        <Label>Edad *</Label>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                contentContainerStyle={{ paddingBottom: 20 }}
+                                keyboardShouldPersistTaps="handled"
+                                className="flex-1">
+                                <View className="gap-4">
+                                    {/* Nombre */}
+                                    <View>
+                                        <Label>Nombre Completo *</Label>
                                         <Controller
                                             control={control}
-                                            name="age"
+                                            name="name"
                                             render={({ field: { onChange, onBlur, value } }) => (
                                                 <Input
-                                                    placeholder="25"
-                                                    value={value.toString()}
-                                                    onChangeText={(text) =>
-                                                        onChange(parseInt(text) || 18)
-                                                    }
-                                                    onBlur={onBlur}
-                                                    keyboardType="numeric"
-                                                />
-                                            )}
-                                        />
-                                        <FieldError error={errors.age?.message} />
-                                    </View>
-                                    <View className="flex-1">
-                                        <Label>País *</Label>
-                                        <Controller
-                                            control={control}
-                                            name="country"
-                                            render={({ field: { onChange, onBlur, value } }) => (
-                                                <Input
-                                                    placeholder="Argentina"
+                                                    placeholder="Ej: Juan Pérez"
                                                     value={value}
                                                     onChangeText={onChange}
                                                     onBlur={onBlur}
                                                 />
                                             )}
                                         />
-                                        <FieldError error={errors.country?.message} />
+                                        <FieldError error={errors.name?.message} />
                                     </View>
-                                </View>
 
-                                {/* Email */}
-                                <View>
-                                    <Label>Email *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="email"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Input
-                                                placeholder="usuario@email.com"
-                                                value={value}
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                                keyboardType="email-address"
-                                                autoCapitalize="none"
+                                    {/* Edad y País */}
+                                    <View className="flex-row gap-3">
+                                        <View className="flex-1">
+                                            <Label>Edad *</Label>
+                                            <Controller
+                                                control={control}
+                                                name="age"
+                                                render={({
+                                                    field: { onChange, onBlur, value },
+                                                }) => (
+                                                    <Input
+                                                        placeholder="25"
+                                                        value={value.toString()}
+                                                        onChangeText={(text) =>
+                                                            onChange(parseInt(text) || 18)
+                                                        }
+                                                        onBlur={onBlur}
+                                                        keyboardType="numeric"
+                                                    />
+                                                )}
                                             />
-                                        )}
-                                    />
-                                    <FieldError error={errors.email?.message} />
-                                </View>
+                                            <FieldError error={errors.age?.message} />
+                                        </View>
+                                        <View className="flex-1">
+                                            <Label>País *</Label>
+                                            <Controller
+                                                control={control}
+                                                name="country"
+                                                render={({
+                                                    field: { onChange, onBlur, value },
+                                                }) => (
+                                                    <Input
+                                                        placeholder="Argentina"
+                                                        value={value}
+                                                        onChangeText={onChange}
+                                                        onBlur={onBlur}
+                                                    />
+                                                )}
+                                            />
+                                            <FieldError error={errors.country?.message} />
+                                        </View>
+                                    </View>
 
-                                {/* Teléfono y Ciudad */}
-                                <View className="flex-row gap-3">
-                                    <View className="flex-1">
-                                        <Label>Teléfono</Label>
+                                    {/* Email */}
+                                    <View>
+                                        <Label>Email *</Label>
                                         <Controller
                                             control={control}
-                                            name="phone"
+                                            name="email"
                                             render={({ field: { onChange, onBlur, value } }) => (
                                                 <Input
-                                                    placeholder="+54 11 1234-5678"
+                                                    placeholder="usuario@email.com"
                                                     value={value}
                                                     onChangeText={onChange}
                                                     onBlur={onBlur}
-                                                    keyboardType="phone-pad"
+                                                    keyboardType="email-address"
+                                                    autoCapitalize="none"
                                                 />
                                             )}
                                         />
-                                        <FieldError error={errors.phone?.message} />
+                                        <FieldError error={errors.email?.message} />
                                     </View>
-                                    <View className="flex-1">
-                                        <Label>Ciudad *</Label>
+
+                                    {/* Teléfono y Ciudad */}
+                                    <View className="flex-row gap-3">
+                                        <View className="flex-1">
+                                            <Label>Teléfono</Label>
+                                            <Controller
+                                                control={control}
+                                                name="phone"
+                                                render={({
+                                                    field: { onChange, onBlur, value },
+                                                }) => (
+                                                    <Input
+                                                        placeholder="+54 11 1234-5678"
+                                                        value={value}
+                                                        onChangeText={onChange}
+                                                        onBlur={onBlur}
+                                                        keyboardType="phone-pad"
+                                                    />
+                                                )}
+                                            />
+                                            <FieldError error={errors.phone?.message} />
+                                        </View>
+                                        <View className="flex-1">
+                                            <Label>Ciudad *</Label>
+                                            <Controller
+                                                control={control}
+                                                name="city"
+                                                render={({
+                                                    field: { onChange, onBlur, value },
+                                                }) => (
+                                                    <Input
+                                                        placeholder="Buenos Aires"
+                                                        value={value}
+                                                        onChangeText={onChange}
+                                                        onBlur={onBlur}
+                                                    />
+                                                )}
+                                            />
+                                            <FieldError error={errors.city?.message} />
+                                        </View>
+                                    </View>
+
+                                    {/* Profesión */}
+                                    <View>
+                                        <Label>Profesión *</Label>
                                         <Controller
                                             control={control}
-                                            name="city"
+                                            name="profession"
                                             render={({ field: { onChange, onBlur, value } }) => (
                                                 <Input
-                                                    placeholder="Buenos Aires"
+                                                    placeholder="Desarrollador Frontend"
                                                     value={value}
                                                     onChangeText={onChange}
                                                     onBlur={onBlur}
                                                 />
                                             )}
                                         />
-                                        <FieldError error={errors.city?.message} />
+                                        <FieldError error={errors.profession?.message} />
+                                    </View>
+
+                                    {/* Empresa */}
+                                    <View>
+                                        <Label>Empresa</Label>
+                                        <Controller
+                                            control={control}
+                                            name="company"
+                                            render={({ field: { onChange, onBlur, value } }) => (
+                                                <Input
+                                                    placeholder="Tech Solutions SA"
+                                                    value={value}
+                                                    onChangeText={onChange}
+                                                    onBlur={onBlur}
+                                                />
+                                            )}
+                                        />
+                                        <FieldError error={errors.company?.message} />
+                                    </View>
+
+                                    {/* Biografía */}
+                                    <View>
+                                        <Label>Biografía</Label>
+                                        <Controller
+                                            control={control}
+                                            name="bio"
+                                            render={({ field: { onChange, onBlur, value } }) => (
+                                                <Textarea
+                                                    placeholder="Descripción breve del usuario..."
+                                                    value={value}
+                                                    onChangeText={onChange}
+                                                    onBlur={onBlur}
+                                                    style={{ minHeight: 80 }}
+                                                />
+                                            )}
+                                        />
+                                        <FieldError error={errors.bio?.message} />
+                                    </View>
+
+                                    {/* Botones */}
+                                    <View className="mt-6 flex-row gap-3">
+                                        <Button
+                                            variant="outline"
+                                            className="flex-1"
+                                            onPress={handleCloseModal}
+                                            disabled={isSubmitting}>
+                                            <Text>Cancelar</Text>
+                                        </Button>
+                                        <Button
+                                            variant="default"
+                                            className="flex-1"
+                                            onPress={handleSubmit(onSubmit)}
+                                            disabled={isSubmitting}>
+                                            <Text>{isSubmitting ? 'Guardando...' : 'Guardar'}</Text>
+                                        </Button>
                                     </View>
                                 </View>
-
-                                {/* Profesión */}
-                                <View>
-                                    <Label>Profesión *</Label>
-                                    <Controller
-                                        control={control}
-                                        name="profession"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Input
-                                                placeholder="Desarrollador Frontend"
-                                                value={value}
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                            />
-                                        )}
-                                    />
-                                    <FieldError error={errors.profession?.message} />
-                                </View>
-
-                                {/* Empresa */}
-                                <View>
-                                    <Label>Empresa</Label>
-                                    <Controller
-                                        control={control}
-                                        name="company"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Input
-                                                placeholder="Tech Solutions SA"
-                                                value={value}
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                            />
-                                        )}
-                                    />
-                                    <FieldError error={errors.company?.message} />
-                                </View>
-
-                                {/* Biografía */}
-                                <View>
-                                    <Label>Biografía</Label>
-                                    <Controller
-                                        control={control}
-                                        name="bio"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Textarea
-                                                placeholder="Descripción breve del usuario..."
-                                                value={value}
-                                                onChangeText={onChange}
-                                                onBlur={onBlur}
-                                                style={{ minHeight: 80 }}
-                                            />
-                                        )}
-                                    />
-                                    <FieldError error={errors.bio?.message} />
-                                </View>
-
-                                {/* Botones */}
-                                <View className="mt-6 flex-row gap-3">
-                                    <Button
-                                        variant="outline"
-                                        className="flex-1"
-                                        onPress={handleCloseModal}
-                                        disabled={isSubmitting}>
-                                        <Text>Cancelar</Text>
-                                    </Button>
-                                    <Button
-                                        variant="default"
-                                        className="flex-1"
-                                        onPress={handleSubmit(onSubmit)}
-                                        disabled={isSubmitting}>
-                                        <Text>{isSubmitting ? 'Guardando...' : 'Guardar'}</Text>
-                                    </Button>
-                                </View>
-                            </View>
-                        </ScrollView>
-                    </DialogContent>
-                </Dialog>
-            </View>
+                            </ScrollView>
+                        </DialogContent>
+                    </Dialog>
+                </View>
+            </KeyboardAware>
         </>
     );
 }
