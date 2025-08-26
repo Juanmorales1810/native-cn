@@ -20,7 +20,7 @@ import {
 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ImageBackground, ScrollView, View } from 'react-native';
 
 // Datos expandidos de usuarios
 const userData = [
@@ -180,31 +180,43 @@ export default function UserDetailScreen() {
         return status === 'Activo' ? 'default' : 'secondary';
     };
 
+    const image = require('../../assets/images/14571534_5479108.jpg');
+
     return (
         <>
             <Stack.Screen options={SCREEN_OPTIONS[colorScheme ?? 'light']} />
-            <ScrollView className="flex-1 bg-background">
+            <ScrollView
+                className="flex-1 bg-background"
+                contentContainerStyle={{ paddingBottom: 32 }}
+                keyboardShouldPersistTaps="handled">
                 {/* Header */}
-                <View className="bg-primary/5 pb-6 pt-28">
-                    <View className="px-6">
-                        <View className="items-center">
-                            <Avatar alt={user.name} className="mb-4 size-24">
-                                <AvatarFallback>
-                                    <Icon as={UserIcon} className="size-12 text-muted-foreground" />
-                                </AvatarFallback>
-                            </Avatar>
-                            <Text variant="h2" className="mb-2 text-center">
-                                {user.name}
-                            </Text>
-                            <Badge variant={getStatusBadgeVariant(user.status)} className="mb-2">
-                                <Text>{user.status}</Text>
-                            </Badge>
-                            <Text variant="muted" className="text-center">
-                                {user.profession}
-                            </Text>
+                <ImageBackground source={image} resizeMode="cover">
+                    <View className="bg-primary/5 pb-6 pt-28">
+                        <View className="px-6">
+                            <View className="items-center">
+                                <Avatar alt={user.name} className="mb-4 size-24">
+                                    <AvatarFallback>
+                                        <Icon
+                                            as={UserIcon}
+                                            className="size-12 text-muted-foreground"
+                                        />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <Text variant="h2" className="mb-2 text-center text-white">
+                                    {user.name}
+                                </Text>
+                                <Badge
+                                    variant={getStatusBadgeVariant(user.status)}
+                                    className="mb-2">
+                                    <Text>{user.status}</Text>
+                                </Badge>
+                                <Text variant="muted" className="text-center text-white">
+                                    {user.profession}
+                                </Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                </ImageBackground>
 
                 {/* Content */}
                 <View className="p-6">
