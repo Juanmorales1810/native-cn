@@ -22,16 +22,9 @@ import {
 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import {
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    View,
-} from 'react-native';
+import { FlatList, Pressable, ScrollView, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { userSchema, type UserFormData, defaultUserValues } from '@/validations';
 
 // Tipos de datos
 interface User {
@@ -48,47 +41,6 @@ interface User {
     status: 'Activo' | 'Inactivo';
     joinDate: string;
 }
-
-// Schema de validación con Zod
-const userSchema = z.object({
-    name: z
-        .string()
-        .min(2, 'El nombre debe tener al menos 2 caracteres')
-        .max(50, 'El nombre no puede exceder 50 caracteres')
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 'El nombre solo puede contener letras y espacios'),
-    age: z
-        .number()
-        .min(18, 'La edad mínima es 18 años')
-        .max(100, 'La edad máxima es 100 años')
-        .int('La edad debe ser un número entero'),
-    country: z
-        .string()
-        .min(2, 'El país debe tener al menos 2 caracteres')
-        .max(30, 'El país no puede exceder 30 caracteres'),
-    email: z
-        .string()
-        .email('Ingrese un email válido')
-        .max(100, 'El email no puede exceder 100 caracteres'),
-    phone: z
-        .string()
-        .min(10, 'El teléfono debe tener al menos 10 dígitos')
-        .max(20, 'El teléfono no puede exceder 20 caracteres')
-        .regex(/^[\+]?[0-9\s\-\(\)]+$/, 'Formato de teléfono inválido')
-        .or(z.literal('')),
-    city: z
-        .string()
-        .min(2, 'La ciudad debe tener al menos 2 caracteres')
-        .max(50, 'La ciudad no puede exceder 50 caracteres'),
-    profession: z
-        .string()
-        .min(2, 'La profesión debe tener al menos 2 caracteres')
-        .max(100, 'La profesión no puede exceder 100 caracteres'),
-    company: z.string().max(100, 'La empresa no puede exceder 100 caracteres').or(z.literal('')),
-    bio: z.string().max(500, 'La biografía no puede exceder 500 caracteres').or(z.literal('')),
-    status: z.enum(['Activo', 'Inactivo']),
-});
-
-type UserFormData = z.infer<typeof userSchema>;
 
 // Datos de ejemplo de usuarios expandidos
 const initialUserData: User[] = [
@@ -240,18 +192,7 @@ export default function Screen() {
         formState: { errors, isSubmitting },
     } = useForm<UserFormData>({
         resolver: zodResolver(userSchema),
-        defaultValues: {
-            name: '',
-            age: 18,
-            country: '',
-            email: '',
-            phone: '',
-            city: '',
-            profession: '',
-            company: '',
-            bio: '',
-            status: 'Activo',
-        },
+        defaultValues: defaultUserValues,
     });
 
     // Ocultar alert después de 3 segundos
